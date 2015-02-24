@@ -393,7 +393,7 @@ ifeq ($(BUILD_ANDROID_GCC),yes)
 GCC_CONFIG_ARGS += $(GCC_CONFIG_LIBSTDCXX_V3) --disable-libssp \
 	--enable-threads --disable-nls --disable-libmudflap --disable-libgomp \
 	--disable-libstdc__-v3 --disable-sjlj-exceptions --disable-shared \
-	--disable-tls --disable-libitm
+	--disable-tls --disable-libitm --enable-target-optspace
 
 CFLAGS_FOR_TARGET += -DTARGET_POSIX_IO -fno-short-enums
 
@@ -408,8 +408,7 @@ endif
 
 # ARM specific options.
 ifeq ($(target_cpu),arm)
-GCC_CONFIG_ARGS += --with-float=soft --with-fpu=vfp --with-arch=armv5te \
-	--enable-target-optspace
+GCC_CONFIG_ARGS += --with-float=soft --with-fpu=vfp --with-arch=armv5te
 
 ifneq ($(target_os),linux-androideabi)
 GCC_CONFIG_ARGS += --with-abi=aapcs
