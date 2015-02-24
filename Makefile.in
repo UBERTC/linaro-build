@@ -79,7 +79,6 @@ NEWLIB_VERSION=newlib-@NEWLIB_VERSION@
 GMP_VERSION=gmp-@GMP_VERSION@
 MPFR_VERSION=mpfr-@MPFR_VERSION@
 MPC_VERSION=mpc-@MPC_VERSION@
-PPL_VERSION=ppl-@PPL_VERSION@
 CLOOG_VERSION=cloog-@CLOOG_VERSION@
 ISL_VERSION=isl-@ISL_VERSION@
 GDB_VERSION=gdb-@GDB_VERSION@
@@ -87,7 +86,6 @@ WITH_PYTHON=@WITH_PYTHON@
 HAVE_MPC=@have_mpc@
 HAVE_MPFR=@have_mpfr@
 HAVE_GMP=@have_gmp@
-HAVE_PPL=@have_ppl@
 HAVE_CLOOG=@have_cloog@
 HAVE_ISL=@have_isl@
 ENABLE_GOLD=@enable_gold@
@@ -109,10 +107,6 @@ endif
 
 ifeq ($(HAVE_GMP),no)
   GMP_DIR=$(TEMP_INSTALLDIR)
-endif
-
-ifeq ($(HAVE_PPL),no)
-  PPL_DIR=$(TEMP_INSTALLDIR)
 endif
 
 ifeq ($(HAVE_CLOOG), no)
@@ -300,8 +294,8 @@ BINUTILS_CONFIG_ARGS=--prefix=$(prefix) \
 	--target=${cur_target} --host=${cur_host} --build=${cur_build} \
 	$(baseargs) --disable-shared --disable-nls
 ifeq ($(ENABLE_GRAPHITE),yes)
-BINUTILS_CONFIG_ARGS+= --with-cloog=${CLOOG_DIR} --with-isl=${ISL_DIR} --with-isl=${ISL_DIR} --with-gmp=${GMP_DIR} \
-	--disable-ppl-version-check --disable-cloog-version-check --disable-isl-version-check $(CLOOG_BACKEND)
+BINUTILS_CONFIG_ARGS+= --with-cloog=${CLOOG_DIR} --with-isl=${ISL_DIR} --with-gmp=${GMP_DIR} \
+	--disable-cloog-version-check --disable-isl-version-check $(CLOOG_BACKEND)
 # links to the static C++ runtime to avoid depending on the host version
 ifneq ($(host_os),darwin)
 BINUTILS_CONFIG_ARGS+= \
@@ -331,7 +325,7 @@ BINUTILS_CONFIG_ARGS += --enable-gold=both/ld
 endif
 endif
 endif
-stmp-config-target-binutils: config.status stmp-install-host-ppl stmp-install-host-isl $(canadian_stmp)
+stmp-config-target-binutils: config.status stmp-install-host-isl $(canadian_stmp)
 	([ -d ${BINUTILS_VERSION} ] || \
 	  mkdir ${BINUTILS_VERSION}) && \
 	($(canadian_env) \
@@ -406,11 +400,10 @@ stmp-config-target-gcc: stmp-install-host-mpc
 GCC_CONFIG_ARGS += --with-mpc=$(MPC_DIR)
 endif
 
-# For gcc 4.5 and 4.6 with graphite optimization, cloog and ppl are required.
 # For gcc 4.8+ with graphite optimization, cloog and isl are required.
 ifeq ($(ENABLE_GRAPHITE),yes)
-GCC_CONFIG_ARGS += --with-cloog=${CLOOG_DIR} --with-isl=${ISL_DIR} --with-ppl=${PPL_DIR} \
-	--disable-ppl-version-check --disable-cloog-version-check --disable-isl-version-check $(CLOOG_BACKEND)
+GCC_CONFIG_ARGS += --with-cloog=${CLOOG_DIR} --with-isl=${ISL_DIR} \
+	--disable-cloog-version-check --disable-isl-version-check $(CLOOG_BACKEND)
 # links to the static C++ runtime to avoid depending on the host version
 ifneq ($(host_os),darwin)
 GCC_CONFIG_ARGS += \
@@ -423,8 +416,8 @@ else
 GCC_CONFIG_ARGS += '--with-host-libstdcxx=-static-libgcc -lstdc++ -lm'
 endif
 else
-# Disable ppl, isl and cloog just in case the host have them install.
-GCC_CONFIG_ARGS += --without-ppl --without-cloog --without-isl
+# Disable isl and cloog just in case the host have them install.
+GCC_CONFIG_ARGS += --without-cloog --without-isl
 endif
 
 # Add Android specific gcc options.
@@ -470,7 +463,7 @@ GCC_CONFIG_ARGS += $(ENABLE_GOLD)
 endif
 
 # We have to add -mandroid in target CFLAGS and CXXFLAGS
-stmp-config-target-gcc: config.status stmp-install-host-ppl stmp-install-host-isl stmp-install-host-cloog stmp-build-target-binutils
+stmp-config-target-gcc: config.status stmp-install-host-isl stmp-install-host-cloog stmp-build-target-binutils
 	([ -d ${GCC_VERSION} ] || \
 	  mkdir ${GCC_VERSION}) && \
 	($(canadian_env) \
@@ -624,40 +617,6 @@ stmp-install-host-mpc:
 endif
 install-host-mpc: stmp-install-host-mpc
 
-# host ppl rules
-.PHONY: config-host-ppl build-host-ppl install-host-ppl
-config-host-ppl: stmp-config-host-ppl
-PPL_CONFIG_ARGS=$(host_baseargs) --prefix=$(TEMP_INSTALLDIR) --disable-shared \
-	  --target=${target_alias} \
-	  --host=${host} --build=${build} \
-	  --disable-nls \
-	  --disable-watchdog --without-java \
-	  --disable-ppl_lcdd --disable-ppl_lpsol --disable-ppl_pips
-stmp-config-host-ppl: config.status stmp-install-host-gmp
-	([ -d ${PPL_VERSION} ] || \
-	 mkdir ${PPL_VERSION}) && \
-	($(canadian_env) \
-	 cd ${PPL_VERSION} ; \
-         export CFLAGS="${CFLAGS} -I$(GMP_DIR)/include" ; \
-         export CXXFLAGS="${CFLAGS} -I$(GMP_DIR)/include" ; \
-         export LDFLAGS="${LDFLAGS} -L$(GMP_DIR)/lib" ; \
-	$(call find-package-srcdir, ${PPL_VERSION})/configure \
-	 $(PPL_CONFIG_ARGS)) && \
-	$(STAMP) $@
-stmp-build-host-ppl: stmp-config-host-ppl
-	$(MAKE) -C ${PPL_VERSION} && $(STAMP) $@
-build-host-ppl: stmp-build-host-ppl
-
-ifeq ($(ENABLE_GRAPHITE),yes)
-stmp-install-host-ppl: stmp-build-host-ppl
-	$(MAKE) -C ${PPL_VERSION} install && \
-	$(STAMP) $@
-else
-stmp-install-host-ppl:
-	$(STAMP) $@
-endif
-install-host-ppl: stmp-install-host-ppl
-
 # host isl rules
 .PHONY: config-host-isl build-host-isl install-host-isl
 config-host-isl: stmp-config-host-isl
@@ -697,22 +656,8 @@ CLOOG_CONFIG_ARGS=$(host_baseargs) --prefix=$(TEMP_INSTALLDIR) --disable-shared 
 	  --target=${target_alias} \
 	  --host=${host} --build=${build} \
 	  --disable-nls
-# for cloog-ppl version 0.15.x, ppl is required.
-ifneq ($(findstring ppl-,$(CLOOG_VERSION)),)
-CLOOG_TARGET = libcloog.la
-stmp-config-host-cloog: config.status stmp-install-host-ppl \
-	  stmp-install-host-ppl-workaround
-stmp-install-host-ppl-workaround:
-	# cloog 0.15.9 is unable to detect newer versions of ppl.
-	# Thus we modify the version definition in header file to satisfy.
-	sed -i -e 's/PPL_VERSION_MINOR 11/PPL_VERSION_MINOR 10/' \
-	  $(PPL_DIR)/include/ppl_c.h
-	$(STAMP) $@
-CLOOG_CONFIG_ARGS+= --with-gmp=$(GMP_DIR) --with-ppl=$(PPL_DIR)
-else
 CLOOG_TARGET = libcloog-isl.la
 CLOOG_CONFIG_ARGS+= --with-gmp-prefix=$(GMP_DIR)
-endif
 stmp-config-host-cloog: config.status stmp-install-host-gmp
 	([ -d ${CLOOG_VERSION} ] || \
 	 mkdir ${CLOOG_VERSION}) && \
@@ -731,10 +676,6 @@ ifeq ($(ENABLE_GRAPHITE),yes)
 stmp-install-host-cloog: stmp-build-host-cloog
 	$(MAKE) -C ${CLOOG_VERSION} install-libLTLIBRARIES \
 		install-pkgincludeHEADERS
-ifeq ($(findstring ppl-,$(CLOOG_VERSION)),)
-	$(MAKE) -C ${CLOOG_VERSION}/isl install-libLTLIBRARIES \
-		install-pkgincludeHEADERS
-endif
 ifeq ($(GCC_MIN_VERSION_4_8_0),yes)
 	$(MAKE) -C ${CLOOG_VERSION} install
 endif

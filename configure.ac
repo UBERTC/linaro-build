@@ -614,19 +614,6 @@ AC_ARG_WITH(gmp, [  --with-gmp=PATH
   [have_gmp=no])
 AC_SUBST(have_gmp)
 
-# Specify a location for ppl
-AC_ARG_WITH(ppl, [  --with-ppl=PATH
-                          specify prefix directory for the installed PPL package.],
-  [if test -d "$withval" ; then
-     have_ppl="$withval"
-   elif test x"$withval" != x"no"; then
-     AC_MSG_ERROR(invalid value for --with-ppl)
-   else
-     have_ppl=no
-   fi],
-  [have_ppl=no])
-AC_SUBST(have_ppl)
-
 # Specify a location for cloog
 AC_ARG_WITH(cloog, [  --with-cloog=PATH
                           specify prefix directory for the installed CLooG package.],
