@@ -292,18 +292,11 @@ ifeq ($(ENABLE_GRAPHITE),yes)
 BINUTILS_CONFIG_ARGS+= --with-cloog=${CLOOG_DIR} --with-isl=${ISL_DIR} --with-gmp=${GMP_DIR} \
 	--disable-cloog-version-check --disable-isl-version-check $(CLOOG_BACKEND)
 # links to the static C++ runtime to avoid depending on the host version
-ifneq ($(host_os),darwin)
 BINUTILS_CONFIG_ARGS+= \
 	'--with-host-libstdcxx=-static-libgcc \
 	 -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' \
 	 --with-gold-ldflags='-static-libgcc -static-libstdc++' \
          --enable-install-libbfd
-else
-# In darwin ld doesn't allow both -static and -dynamic.  Instead, we rely on explicit
-# "-isysroot $(mac_sdk_root) -mmacosx-version-min=$(mac_sdk_version)" to establish
-# minimal sdk version toolchain will run
-GCC_CONFIG_ARGS += '--with-host-libstdcxx=-static-libgcc -lstdc++ -lm'
-endif
 endif
 # Enable dual linker support and make gold as default linker when gold is
 # enabled. Notice that our binutils take different --enable-gold=xxx options.
@@ -384,16 +377,9 @@ ifeq ($(ENABLE_GRAPHITE),yes)
 GCC_CONFIG_ARGS += --with-cloog=${CLOOG_DIR} --with-isl=${ISL_DIR} \
 	--disable-cloog-version-check --disable-isl-version-check $(CLOOG_BACKEND)
 # links to the static C++ runtime to avoid depending on the host version
-ifneq ($(host_os),darwin)
 GCC_CONFIG_ARGS += \
 	'--with-host-libstdcxx=-static-libgcc \
 	 -Wl,-Bstatic,-lstdc++,-Bdynamic -lm'
-else
-# In darwin ld doesn't allow both -static and -dynamic.  Instead, we rely on explicit
-# "-isysroot $(mac_sdk_root) -mmacosx-version-min=$(mac_sdk_version)" to establish
-# minimal sdk version toolchain will run
-GCC_CONFIG_ARGS += '--with-host-libstdcxx=-static-libgcc -lstdc++ -lm'
-endif
 else
 # Disable isl and cloog just in case the host have them install.
 GCC_CONFIG_ARGS += --without-cloog --without-isl
