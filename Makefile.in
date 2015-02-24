@@ -55,9 +55,6 @@ INSTALL_DATA:=@INSTALL_DATA@
 TOPLEVEL_CONFIGURE_ARGUMENTS:=@TOPLEVEL_CONFIGURE_ARGUMENTS@
 baseargs = @baseargs@
 host_baseargs = @host_baseargs@
-GCC_MIN_VERSION_4_3_0:=@GCC_MIN_VERSION_4_3_0@
-GCC_MIN_VERSION_4_5_0:=@GCC_MIN_VERSION_4_5_0@
-GCC_MIN_VERSION_4_8_0:=@GCC_MIN_VERSION_4_8_0@
 GDB_MIN_VERSION_7_2:=@GDB_MIN_VERSION_7_2@
 CLOOG_BACKEND:=@CLOOG_BACKEND@
 ENABLE_GRAPHITE:=@ENABLE_GRAPHITE@
@@ -375,16 +372,12 @@ GCC_CONFIG_ARGS=--prefix=$(prefix) \
 
 # For gcc versions 4.3.0 and later, gmp and mpfr are required.
 # Also build libgcc is a seperate sub-target in 4.3.0+.
-ifeq ($(GCC_MIN_VERSION_4_3_0),yes)
 stmp-config-target-gcc: stmp-install-host-gmp stmp-install-host-mpfr
 GCC_CONFIG_ARGS += --with-gmp=$(GMP_DIR) --with-mpfr=$(MPFR_DIR)
-endif
 
 # For gcc versions 4.5.0 and higher, mpc is required.
-ifeq ($(GCC_MIN_VERSION_4_5_0),yes)
 stmp-config-target-gcc: stmp-install-host-mpc
 GCC_CONFIG_ARGS += --with-mpc=$(MPC_DIR)
-endif
 
 # For gcc 4.8+ with graphite optimization, cloog and isl are required.
 ifeq ($(ENABLE_GRAPHITE),yes)
@@ -479,11 +472,7 @@ install-target-gcc: install-target-gcc-gcc $(install-target-gcc-multilibs)
 # minimal gcc only builds the C and C++ compilers and libgcc
 # We use the full gcc configure rules.
 .PHONY: build-target-minimal-gcc install-target-minimal-gcc
-ifeq ("$(GCC_MIN_VERSION_4_3_0)","yes")
 MINIMAL_GCC_BUILD_TARGETS:= gcc target-libgcc
-else
-MINIMAL_GCC_BUILD_TARGETS:= gcc
-endif
 
 build-target-minimal-gcc: stmp-build-target-minimal-gcc
 stmp-build-target-minimal-gcc: stmp-config-target-gcc
@@ -625,7 +614,7 @@ stmp-build-host-isl: stmp-config-host-isl
 	$(MAKE) -C ${ISL_VERSION} && $(STAMP) $@
 build-host-isl: stmp-build-host-isl
 
-ifeq ($(ENABLE_GRAPHITE)$(GCC_MIN_VERSION_4_8_0),yesyes)
+ifeq ($(ENABLE_GRAPHITE),yes)
 stmp-install-host-isl: stmp-build-host-isl
 	$(MAKE) -C ${ISL_VERSION} install && \
 	$(STAMP) $@
@@ -662,9 +651,9 @@ ifeq ($(ENABLE_GRAPHITE),yes)
 stmp-install-host-cloog: stmp-build-host-cloog
 	$(MAKE) -C ${CLOOG_VERSION} install-libLTLIBRARIES \
 		install-pkgincludeHEADERS
-ifeq ($(GCC_MIN_VERSION_4_8_0),yes)
+	$(MAKE) -C ${CLOOG_VERSION}/isl install-libLTLIBRARIES \
+		install-pkgincludeHEADERS
 	$(MAKE) -C ${CLOOG_VERSION} install
-endif
 	$(STAMP) $@
 else
 stmp-install-host-cloog:
