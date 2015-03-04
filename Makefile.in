@@ -286,7 +286,7 @@ config-target-binutils: stmp-config-target-binutils
 # We do not want to enable shared libraries in binutils
 BINUTILS_CONFIG_ARGS=--prefix=$(prefix) \
 	--target=${cur_target} --host=${cur_host} --build=${cur_build} \
-	$(baseargs) --disable-shared --disable-nls
+	$(baseargs) --disable-shared --disable-nls --disable-werror
 ifeq ($(ENABLE_GRAPHITE),yes)
 BINUTILS_CONFIG_ARGS+= --with-cloog=${CLOOG_DIR} --with-isl=${ISL_DIR} --with-gmp=${GMP_DIR} \
 	--disable-cloog-version-check --disable-isl-version-check $(CLOOG_BACKEND)
@@ -388,7 +388,7 @@ endif
 GCC_CONFIG_ARGS += $(GCC_CONFIG_LIBSTDCXX_V3) --disable-libssp \
 	--enable-threads --disable-nls  --enable-target-optspace \
 	--disable-shared --disable-tls --disable-libitm \
-	--enable-version-specific-runtime-libs
+	--enable-version-specific-runtime-libs --disable-werror
 
 ifneq ($(target_os),linux-gnu)
 GCC_CONFIG_ARGS += --disable-libstdc__-v3
@@ -660,7 +660,7 @@ config-target-gdb: stmp-config-target-gdb
 
 GDB_CONFIG_ARGS=$(host_baseargs) --prefix=$(prefix) \
 	--target=$(GDB_TARGET) --host=${cur_host} --build=${cur_build} \
-	$(WITH_PYTHON) --disable-nls -disable-shared
+	$(WITH_PYTHON) --disable-nls -disable-shared --disable-werror
 
 stmp-config-target-gdb: config.status $(canadian_stmp)
 	([ -d ${GDB_VERSION} ] || \
