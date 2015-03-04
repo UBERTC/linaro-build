@@ -475,7 +475,7 @@ install-target-minimal-gcc: stmp-build-target-minimal-gcc
 # target newlib rules
 .PHONY: config-target-newlib build-target-newlib install-target-newlib
 config-target-newlib: stmp-config-target-newlib
-NEWLIB_CONFIG_ARGS=$(baseargs) --prefix=$(prefix) \
+NEWLIB_CONFIG_ARGS=$(baseargs) --prefix=$(prefix) --disable-shared \
 	  --target=${cur_target} --host=${cur_host} --build=${cur_build}
 
 stmp-config-target-newlib: stmp-build-target-binutils \
