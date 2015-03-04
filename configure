@@ -2483,7 +2483,6 @@ if test \( ! -d $srcdir/../$tool/newlib-${NEWLIB_VERSION} \) -a \( x"$version" !
 fi
 fi
 
-if test "$GCC_MIN_VERSION_4_3_0" == "yes"; then
 # gmp version (default is 4.2.2)
 # gmp is only used for gcc version higher than 4.3.0
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking gmp version" >&5
@@ -2562,11 +2561,9 @@ if test \( ! -d $srcdir/../$tool/mpfr-${MPFR_VERSION} \) -a \( x"$version" != x"
   fi
 fi
 
-fi
 
 
 
-if test "$GCC_MIN_VERSION_4_5_0" == "yes"; then
 # mpc version (default is 0.8.1)
 # mpc is only used for gcc version higher than 4.5.0
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking mpc version" >&5
@@ -2604,7 +2601,6 @@ if test \( ! -d $srcdir/../$tool/mpc-${MPC_VERSION} \) -a \( x"$version" != x"no
   else
     as_fn_error "'package mpc-${MPC_VERSION} does not exist.'" "$LINENO" 5
   fi
-fi
 fi
 
 if test "$ENABLE_GRAPHITE" == "yes"; then
