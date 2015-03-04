@@ -385,10 +385,10 @@ GCC_CONFIG_ARGS += --without-cloog --without-isl
 endif
 
 # The following are General GCC configuration options for all targets
-GCC_CONFIG_ARGS += $(GCC_CONFIG_LIBSTDCXX_V3) --disable-libssp \
-	--enable-threads --disable-nls  --enable-target-optspace \
+GCC_CONFIG_ARGS += --enable-version-specific-runtime-libs \
+	--enable-threads --disable-nls --enable-target-optspace \
 	--disable-shared --disable-tls --disable-libitm \
-	--enable-version-specific-runtime-libs --disable-werror
+	--disable-werror --disable-libssp
 
 ifneq ($(target_os),linux-gnu)
 GCC_CONFIG_ARGS += --disable-libstdc__-v3
