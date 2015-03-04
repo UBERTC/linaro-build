@@ -559,7 +559,6 @@ have_mpfr
 have_mpc
 sysroot
 WITH_PYTHON
-GDB_MIN_VERSION_7_2
 GDB_VERSION
 CLOOG_VERSION
 CLOOG_BACKEND
@@ -2732,7 +2731,6 @@ if test \( ! -d $srcdir/../$tool/gdb-${GDB_VERSION} \) -a \( x"$version" != x"no
     as_fn_error "'package gdb-${GDB_VERSION} does not exist.'" "$LINENO" 5
   fi
 fi
-if test "$GDB_MIN_VERSION_7_2" == "yes"; then
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking with python" >&5
 $as_echo_n "checking with python... " >&6; }
 
@@ -2747,12 +2745,10 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $WITH_PYTHON" >&5
 $as_echo "$WITH_PYTHON" >&6; }
-fi
 
 
 # For certain targets, with gdb 7.2+, the proper gdb target is
 # arm-linux-android.
-if test "$GDB_MIN_VERSION_7_2" == "yes"; then
 case $target in
   arm-unknown-linux-androideabi | arm-unknown-eabi)
     GDB_TARGET=arm-linux-android
@@ -2760,7 +2756,6 @@ case $target in
     *)
     ;;
 esac
-fi
 
 # Sysroot location
 

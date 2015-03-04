@@ -525,7 +525,6 @@ AC_MSG_RESULT($GDB_VERSION)
 AC_SUBST(GDB_VERSION)
 ANDROID_CHECK_PACKAGE(gdb-${GDB_VERSION})
 
-if test "$GDB_MIN_VERSION_7_2" == "yes"; then
 AC_MSG_CHECKING([with python])
 AC_ARG_WITH([python],
   [  --with-python=WITH_PYTHON
@@ -535,12 +534,10 @@ AC_ARG_WITH([python],
    fi],
 [WITH_PYTHON=""])
 AC_MSG_RESULT($WITH_PYTHON)
-fi
 AC_SUBST(WITH_PYTHON)
 
 # For certain targets, with gdb 7.2+, the proper gdb target is 
 # arm-linux-android.
-if test "$GDB_MIN_VERSION_7_2" == "yes"; then
 case $target in
   arm-unknown-linux-androideabi | arm-unknown-eabi)
     GDB_TARGET=arm-linux-android
@@ -548,7 +545,6 @@ case $target in
     *)
     ;;
 esac
-fi
 
 # Sysroot location
 AC_ARG_WITH([sysroot],
