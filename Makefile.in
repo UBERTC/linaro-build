@@ -388,7 +388,7 @@ endif
 GCC_CONFIG_ARGS += --enable-version-specific-runtime-libs \
 	--enable-threads --disable-nls --enable-target-optspace \
 	--disable-shared --disable-tls --disable-libitm \
-	--disable-werror --disable-libssp
+	--disable-werror --disable-libssp --disable-sjlj-exceptions 
 
 ifneq ($(target_os),linux-gnu)
 GCC_CONFIG_ARGS += --disable-libstdc__-v3
